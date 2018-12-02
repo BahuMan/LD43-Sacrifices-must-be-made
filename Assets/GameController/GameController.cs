@@ -16,8 +16,18 @@ public class GameController : MonoBehaviour {
     private CameraFollowPlane _camera;
     private OverviewCamera _overview;
 
-	// Use this for initialization
-	void Start ()
+#if UNITY_STANDALONE
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+    }
+#endif
+    // Use this for initialization
+    void Start ()
     {
         _camera = GameObject.FindObjectOfType<CameraFollowPlane>();
         _overview = GameObject.FindObjectOfType<OverviewCamera>();
@@ -33,9 +43,9 @@ public class GameController : MonoBehaviour {
     public void OnPlayerDied()
     {
         //temporarily move camera to spawn (so we will see previous clones launch as well)
-        _camera._target = null;
-        _camera.transform.position = _cloneSpawn.position + _camera._offset * _cloneList.Count;
-        _camera.transform.rotation = Quaternion.identity;
+        _camera._target = _cloneSpawn;
+        //_camera.transform.position = _cloneSpawn.position + _camera._offset * _cloneList.Count;
+        //_camera.transform.rotation = Quaternion.identity;
 
         //turn current player into a simple clone:
         _currentPlayer.GetComponent<PlayerInput>()._onPlayerDeath.RemoveListener(OnPlayerDied);
