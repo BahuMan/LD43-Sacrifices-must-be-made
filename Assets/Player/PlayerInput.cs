@@ -8,6 +8,7 @@ public class PlayerInput : MonoBehaviour {
     public float _speedYaw = 90.0f;
 
     public UnityEvent _onPlayerDeath;
+    public Material _clonedMaterial;
 
     private Rigidbody _rigid;
     private float _rotX = 0;
@@ -43,6 +44,10 @@ public class PlayerInput : MonoBehaviour {
 
     public void StopPlayerInput()
     {
+        foreach (var m in GetComponentsInChildren<MeshRenderer>())
+        {
+            m.material = _clonedMaterial;
+        }
         this.enabled = false;
     }
 }

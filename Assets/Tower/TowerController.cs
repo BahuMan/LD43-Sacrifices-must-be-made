@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class TowerController : MonoBehaviour {
 
@@ -8,6 +9,8 @@ public class TowerController : MonoBehaviour {
     public Rigidbody _projectilePrefab;
     public float _shootInterval = 1f;
     public float _targetInterval = 5f;
+    public float _maxGunDepression = 5f;
+    public UnityEvent _onDeath;
 
     [SerializeField]
     private Transform _cupola;
@@ -37,13 +40,26 @@ public class TowerController : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            _onDeath.Invoke();
+            Destroy(this.gameObject);
+        }
+
         if (!_target) return;
 
         Vector3 Aimpoint = FirstOrderIntercept(transform.position, Vector3.zero, _projectileSpeed, _target.position, _target.GetComponent<Rigidbody>().velocity);
         Vector3 angles = Quaternion.LookRotation(Aimpoint - transform.position).eulerAngles;
 
+        //to calculate min and max gun elevation, an angle between +/- 180 degrees works best:
+        float barrelx = angles.x;
+        while (barrelx > 180) barrelx -= 360;
+        while (barrelx < -180) barrelx += 360;
+        barrelx = Mathf.Clamp(barrelx, -70, 5);
+
         _cupola.rotation = Quaternion.Euler(0f, angles.y, 0f);
-        _barrel.localRotation = Quaternion.Euler(angles.x, 0f, 0f);
+        _barrel.localRotation = Quaternion.Euler(barrelx, 0f, 0f);
 
         if (Time.time > _nextShotTime)
         {
@@ -65,6 +81,36 @@ public class TowerController : MonoBehaviour {
             }
         }
 	}
+
+    public void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log("Tower checking collision with " + collision.gameObject.name);
+        Rigidbody RootRigid = collision.transform.GetComponentInParent<Rigidbody>();
+        GameObject RootObject;
+
+        //even though plane has a rigidbody, the GetComponentInParent can't find it
+        //because only active components on active objects are found
+        //I guess the collision trigger on plane caused it to be deactivated before this trigger was called
+        if (RootRigid == null) RootObject = collision.gameObject;
+        else RootObject = RootRigid.gameObject;
+
+
+        if (RootObject.CompareTag("Player"))
+        {
+            RequestDeath();
+        }
+    }
+
+    public void RequestDeath()
+    {
+        _onDeath.Invoke();
+        this.gameObject.SetActive(false);
+    }
+
+    public void OnStartReplay()
+    {
+        this.gameObject.SetActive(true);
+    }
 
     private void OnTriggerEnter(Collider other)
     {
