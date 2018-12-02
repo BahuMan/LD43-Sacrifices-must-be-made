@@ -72,13 +72,25 @@ public class GameController : MonoBehaviour {
         //wait one frame so all tower statuses are up to date:
         yield return null;
 
+        if (_cloneList.Count == 0)
+        {
+            MessageUI.Showtext("You are an AI", 2);
+            yield return new WaitForSeconds(2);
+            MessageUI.Showtext("Destroy the AA guns by flying into them", 2);
+            yield return new WaitForSeconds(2);
+            MessageUI.Showtext("You will Die.\nRepeatedly", 2);
+            yield return new WaitForSeconds(2);
+            MessageUI.Showtext("But sacrifices must be made", 2);
+            yield return new WaitForSeconds(2);
+        }
+
         //restart all towers:
         bool gameover = true;
         foreach (var t in _towerList) if (t.WasAlive()) gameover = false;
 
         for (int i=0; i<_cloneList.Count; ++i)
         {
-            Debug.Log("Countdown " + (_cloneList.Count - i));
+            MessageUI.Showtext("Countdown " + (_cloneList.Count - i), _timeBetweenSpawn*0.8f);
             _cloneList[i].gameObject.SetActive(true);
             _cloneList[i].transform.transform.position = _cloneSpawn.position;
             _cloneList[i].transform.transform.rotation = _cloneSpawn.rotation;
@@ -88,14 +100,14 @@ public class GameController : MonoBehaviour {
 
         if (!gameover)
         {
-            Debug.Log("GO!");
+            MessageUI.Showtext("GO!", _timeBetweenSpawn);
             SpawnPlayer();
         }
         else
         {
             _camera.gameObject.SetActive(false);
             _overview.gameObject.SetActive(true);
-            Debug.Log("Game over, you won! You're also dead.");
+            MessageUI.Showtext("Game over, you won! You're also dead.", 10);
         }
     }
 }
