@@ -7,19 +7,12 @@ public class HQScript : MonoBehaviour {
 
     public void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("HQ checking collision with " + collision.gameObject.name);
-        Rigidbody RootRigid = collision.transform.GetComponentInParent<Rigidbody>();
-        GameObject RootObject;
-
-        //even though plane has a rigidbody, the GetComponentInParent can't find it
-        //because only active components on active objects are found
-        //I guess the collision trigger on plane caused it to be deactivated before this trigger was called
-        if (RootRigid == null) RootObject = collision.gameObject;
-        else RootObject = RootRigid.gameObject;
-
+        //Debug.Log("HQ checking collision with " + collision.gameObject.name);
+        GameObject RootObject = collision.gameObject.transform.root.gameObject;
 
         if (RootObject.CompareTag("Player"))
         {
+            Debug.LogError("player found!");
             RequestDeath();
         }
     }
