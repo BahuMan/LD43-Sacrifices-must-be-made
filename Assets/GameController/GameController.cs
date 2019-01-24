@@ -13,7 +13,7 @@ public class GameController : MonoBehaviour {
     //private HQScript[] _hqList;
 
     private ReplayTransform _currentPlayer;
-    //private CameraFollowPlane _camera;
+    private CameraFollowPlane _camera;
     private MFlight.MouseFlightController _mouseCam;
     private OverviewCamera _overview;
 
@@ -30,7 +30,7 @@ public class GameController : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
-        //_camera = GameObject.FindObjectOfType<CameraFollowPlane>();
+        _camera = GameObject.FindObjectOfType<CameraFollowPlane>();
         _mouseCam = GameObject.FindObjectOfType<MFlight.MouseFlightController>();
         _overview = GameObject.FindObjectOfType<OverviewCamera>();
         _overview.gameObject.SetActive(false);
@@ -52,8 +52,8 @@ public class GameController : MonoBehaviour {
         yield return new WaitForSeconds(2f);
 
         //temporarily move camera to spawn (so we will see previous clones launch as well)
-        //_camera._target = _cloneSpawn;
-        _mouseCam.aircraft = _cloneSpawn;
+        if (_camera != null) _camera._target = _cloneSpawn;
+        if (_mouseCam != null) _mouseCam.aircraft = _cloneSpawn;
         //_camera.transform.position = _cloneSpawn.position + _camera._offset * _cloneList.Count;
         //_camera.transform.rotation = Quaternion.identity;
 
@@ -67,16 +67,16 @@ public class GameController : MonoBehaviour {
 
     private void StartOverview()
     {
-        //_camera.gameObject.SetActive(false);
-        _mouseCam.gameObject.SetActive(false);
+        if (_camera != null) _camera.gameObject.SetActive(false);
+        if (_mouseCam != null) _mouseCam.gameObject.SetActive(false);
         _overview.gameObject.SetActive(true);
     }
 
     private void SpawnPlayer()
     {
         _currentPlayer = Instantiate<ReplayTransform>(_playerPrefab);
-        //_camera._target = _currentPlayer.transform;
-        _mouseCam.aircraft = _currentPlayer.transform;
+        if (_camera != null) _camera._target = _currentPlayer.transform;
+        if (_mouseCam != null) _mouseCam.aircraft = _currentPlayer.transform;
         _currentPlayer.GetComponent<PlayerHealth>()._onPlayerDeath.AddListener(OnPlayerDied);
         _currentPlayer.transform.position = _cloneSpawn.position;
         _currentPlayer.transform.rotation = _cloneSpawn.rotation;
@@ -127,8 +127,8 @@ public class GameController : MonoBehaviour {
         }
         else
         {
-            //_camera.gameObject.SetActive(false);
-            _mouseCam.gameObject.SetActive(false);
+            if (_camera != null) _camera.gameObject.SetActive(false);
+            if (_mouseCam != null) _mouseCam.gameObject.SetActive(false);
             _overview.gameObject.SetActive(true);
             MessageUI.Showtext("Game over, you won! You're also dead.", 10);
         }

@@ -6,5 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/testscene.unity
-    guid: 47bd97ac69152ae45ab247f236e589e3
+    path: Assets/Scenes/MouseFlightScene.unity
+    guid: acdfb95fcd192f54292123fe47489a93
+  m_configObjects: {}
